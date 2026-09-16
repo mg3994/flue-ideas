@@ -2,12 +2,18 @@ name: "IDE Guide: Daily 3:00 AM IST Research Cron"
 
 on:
   schedule:
-    # 21:30 UTC = 03:00 AM IST (Indian Standard Time, UTC+5:30)
+    # Target: 3:00 AM IST daily (21:30 UTC).
+    # Note: GitHub Actions scheduled workflows may experience slight execution delays (typically 5 to 15 mins) depending on runner VM queue load.
     - cron: '30 21 * * *'
   workflow_dispatch:
     inputs:
       create_issue:
         description: 'Post report as a GitHub Issue'
+        required: false
+        type: boolean
+        default: true
+      force_run:
+        description: 'Flexible manual trigger run (overrides schedule delay)'
         required: false
         type: boolean
         default: true
