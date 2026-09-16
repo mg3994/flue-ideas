@@ -41,13 +41,17 @@ jobs:
       - name: Execute Daily IDE Web Research Cron
         run: node scripts/cron-research-ides.mjs
 
+      - name: Package Content Assets & Zip Bundle
+        run: npm run package
+
       - name: Upload Daily Intelligence Assets
         uses: actions/upload-artifact@v4
         with:
           name: daily-ide-intelligence-pack
           path: |
             dist/DAILY_IDE_REPORT.md
-            dist/releases/daily-trending/*
+            dist/releases/*
+            dist/ide-guide-content-release.zip
           retention-days: 14
 
       - name: Publish Daily Intelligence to GitHub Issues
