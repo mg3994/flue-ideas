@@ -3,7 +3,7 @@ import path from 'node:path';
 import { trackLatestIdes } from '../src/research/ide-tracker.mjs';
 import { CONFIG } from '../src/config.mjs';
 import { generateYouTubeScript } from '../src/generators/youtube-script.mjs';
-import { generateBloggerAmpHtml, generateBloggerPostSnippet } from '../src/generators/blogger-amp.mjs';
+import { generateBloggerPostContent, generateBloggerAmpHtml, generateBloggerPostSnippet } from '../src/generators/blogger-amp.mjs';
 
 const DIST_DIR = path.resolve(process.cwd(), 'dist');
 const REPORT_PATH = path.join(DIST_DIR, 'DAILY_IDE_REPORT.md');
