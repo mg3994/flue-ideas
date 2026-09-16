@@ -33,7 +33,7 @@ for (const skillName of skillDirectories) {
   }
 
   const content = fs.readFileSync(skillFile, 'utf-8');
-  const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+  const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
 
   if (!frontmatterMatch) {
     console.error(`❌ [${skillName}] SKILL.md missing valid YAML frontmatter.`);

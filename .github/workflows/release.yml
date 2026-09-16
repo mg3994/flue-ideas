@@ -1,0 +1,92 @@
+name: "IDE Guide: Content Release Pipeline"
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release Tag (e.g. v1.0.0)'
+        required: false
+        default: 'v1.0.0'
+      draft:
+        description: 'Publish as Draft Release'
+        required: false
+        type: boolean
+        default: false
+      prerelease:
+        description: 'Publish as Pre-Release'
+        required: false
+        type: boolean
+        default: false
+  pull_request:
+    branches:
+      - '**'
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    name: "Validate Skills & Content Assets"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate Skills Specifications
+        run: npm run validate:skills
+
+      - name: Validate Content Quality & AMP Compliance
+        run: npm run validate:content
+
+  release:
+    name: "Generate & Publish Release Assets"
+    needs: validate
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Generate YouTube Scripts & Blogger AMP HTML
+        run: npm run generate
+
+      - name: Package Release Archives & Notes
+        run: npm run package
+
+      - name: Determine Effective Release Tag
+        id: tag
+        run: |
+          if [ -n "${{ github.event.inputs.tag_name }}" ]; then
+            echo "tag_name=${{ github.event.inputs.tag_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag_name=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag_name }}
+          name: "IDE Guide Content Pack ${{ steps.tag.outputs.tag_name }}"
+          body_path: dist/RELEASE_NOTES.md
+          draft: ${{ github.event.inputs.draft || false }}
+          prerelease: ${{ github.event.inputs.prerelease || false }}
+          generate_release_notes: true
+          files: |
+            dist/releases/*.md
+            dist/releases/*.html
+            dist/ide-guide-content-release.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

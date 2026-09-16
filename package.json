@@ -1,0 +1,24 @@
+{
+  "name": "ide-guide-content-engine",
+  "version": "1.0.0",
+  "description": "Content release generator for IDE Guide YouTube channel and ideguide.blogspot.com Blogger AMP posts",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/validate-skills.mjs && node tests/validate-content.mjs",
+    "validate:skills": "node tests/validate-skills.mjs",
+    "validate:content": "node tests/validate-content.mjs",
+    "generate": "node scripts/generate-release-content.mjs",
+    "package": "node scripts/package-release.mjs",
+    "build": "node scripts/generate-release-content.mjs && node scripts/package-release.mjs",
+    "research": "node scripts/cron-research-ides.mjs"
+  },
+  "keywords": [
+    "ide-guide",
+    "youtube-scripts",
+    "blogger-amp",
+    "accelerated-mobile-pages",
+    "github-releases"
+  ],
+  "author": "IDE Guide Team",
+  "license": "Apache-2.0"
+}
