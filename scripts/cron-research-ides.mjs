@@ -3,7 +3,7 @@ import path from 'node:path';
 import { trackLatestIdes } from '../src/research/ide-tracker.mjs';
 import { CONFIG } from '../src/config.mjs';
 import { generateYouTubeScript } from '../src/generators/youtube-script.mjs';
-import { generateBloggerAmpHtml, generateBloggerPostSnippet } from '../src/generators/blogger-amp.mjs';
+import { generateBloggerPostContent, generateBloggerAmpHtml, generateBloggerPostSnippet } from '../src/generators/blogger-amp.mjs';
 
 const DIST_DIR = path.resolve(process.cwd(), 'dist');
 const REPORT_PATH = path.join(DIST_DIR, 'DAILY_IDE_REPORT.md');
@@ -158,18 +158,23 @@ const candidateEpisode = {
   ],
 };
 
+const RELEASES_DIR = path.resolve(DIST_DIR, 'releases');
+fs.mkdirSync(RELEASES_DIR, { recursive: true });
+
 // Write YouTube Script
 const ytScript = generateYouTubeScript(candidateEpisode);
 fs.writeFileSync(path.join(DAILY_DIR, 'daily-trending-youtube-script.md'), ytScript, 'utf-8');
+fs.writeFileSync(path.join(RELEASES_DIR, `${trendingIde.id}-daily-youtube-script.md`), ytScript, 'utf-8');
 
 // Write Blogger Post Content (Content-only for Blogger HTML Editor with TOC)
 const bloggerHtml = generateBloggerPostContent(candidateEpisode);
 fs.writeFileSync(path.join(DAILY_DIR, 'daily-trending-blogger-post.html'), bloggerHtml, 'utf-8');
+fs.writeFileSync(path.join(RELEASES_DIR, `${trendingIde.id}-daily-blogger-post.html`), bloggerHtml, 'utf-8');
 
 report += `\n---\n\n## 🎬 Daily Synthesized Content Package: ${trendingIde.name}
-The daily cron synthesized ready-to-publish assets in \`dist/releases/daily-trending/\`:
-- 📄 **YouTube Script**: \`daily-trending-youtube-script.md\`
-- ⚡ **Blogger Post HTML (Content Only + TOC)**: \`daily-trending-blogger-post.html\`
+The daily cron synthesized ready-to-publish assets in \`dist/releases/\`:
+- 📄 **YouTube Script**: \`${trendingIde.id}-daily-youtube-script.md\`
+- ⚡ **Blogger Post HTML (AMP Compatible)**: \`${trendingIde.id}-daily-blogger-post.html\`
 `;
 
 fs.writeFileSync(REPORT_PATH, report, 'utf-8');
